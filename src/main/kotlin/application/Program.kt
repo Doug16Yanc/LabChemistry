@@ -1,6 +1,8 @@
 package application
 
 import domain.Mistura
+import services.Gerenciamento
+import services.UsoIndividuos
 import java.util.*
 
 fun main() {
@@ -9,24 +11,36 @@ fun main() {
 }
 
 fun interagePrimeiro(){
-    println("Quem é você?\n")
-    println("G/g - Gerente\n" +
-            "P/p - Professor\n" +
-            "A/a - Aluno\n")
-    var opcao = readLine()?.trim()?.lowercase(Locale.getDefault())
+    do{
+        println("Quem é você?\n")
 
-    when(opcao){
-        "g" -> {
+        println("G/g - Gerente\n" +
+                "P/p - Professor\n" +
+                "A/a - Aluno\n" +
+                "O/o - Sair do sistema\n")
+        var opcao = readLine()?.trim()?.lowercase(Locale.getDefault())
 
-        }
-        "p" -> {
+        when(opcao) {
+            "g" -> {
+                Gerenciamento().validoLogin()
+            }
 
-        }
-        "a" -> {
+            "p" -> {
+                UsoIndividuos.questionaSobreCadastro(opcao)
+            }
 
+            "a" -> {
+
+            }
+
+            "o" -> {
+                println("Sua despedida é sempre tão desoladora e comovente, espero te ver logo")
+                System.exit(0)
+            }
+
+            else -> {
+                println("")
+            }
         }
-        else -> {
-            println("")
-        }
-    }
+    } while (true)
 }
