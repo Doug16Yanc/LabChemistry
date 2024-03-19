@@ -1,6 +1,8 @@
 package application
 
-import domain.Mistura
+import domain.Departamento
+import domain.persons.Aluno
+import domain.persons.Professor
 import services.Gerenciamento
 import services.UsoIndividuos
 import java.util.*
@@ -11,6 +13,9 @@ fun main() {
 }
 
 fun interagePrimeiro(){
+    val departamentos : MutableList<Departamento> = ArrayList<Departamento>()
+    val professores: MutableList<Professor> = ArrayList<Professor>()
+    val alunos: MutableList<Aluno> = ArrayList<Aluno>()
     do{
         println("Quem é você?\n")
 
@@ -22,15 +27,15 @@ fun interagePrimeiro(){
 
         when(opcao) {
             "g" -> {
-                Gerenciamento().validoLogin()
+                Gerenciamento().validoLogin(departamentos, professores, alunos)
             }
 
             "p" -> {
-                UsoIndividuos.questionaSobreCadastro(opcao)
+                UsoIndividuos.questionaSobreCadastro(opcao, departamentos, professores, alunos)
             }
 
             "a" -> {
-
+                UsoIndividuos.questionaSobreCadastro(opcao, departamentos, professores, alunos)
             }
 
             "o" -> {
@@ -39,7 +44,7 @@ fun interagePrimeiro(){
             }
 
             else -> {
-                println("")
+                println("Opção impossível.\n")
             }
         }
     } while (true)

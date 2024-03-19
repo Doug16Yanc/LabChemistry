@@ -1,21 +1,27 @@
 package services
 
 import domain.Departamento
-import domain.persons.Individuo
+import domain.persons.Aluno
+import domain.persons.Professor
 import repositories.CrioCadastro
 import repositories.CrioIdentificadores
-import repositories.FazLogin
 import utilidades.Util.Companion.sc
 import java.util.*
-import kotlin.collections.ArrayList
+import java.util.function.Predicate
 import kotlin.random.Random
 
 
-class UsoIndividuos : FazLogin, CrioCadastro, CrioIdentificadores {
-    val individuals : MutableList<Individuo> = ArrayList<Individuo>()
+class UsoIndividuos : CrioCadastro, CrioIdentificadores {
+
+
     companion object {
 
-        fun questionaSobreCadastro(escolha : String) {
+        fun questionaSobreCadastro(
+            escolha: String,
+            departamentos: MutableList<Departamento>,
+            professores: MutableList<Professor>,
+            alunos: MutableList<Aluno>
+        ) {
             println(
                 "Já é cadastrado em nossa plataforma?\n" +
                         "S/s - Sim\n" +
@@ -25,11 +31,11 @@ class UsoIndividuos : FazLogin, CrioCadastro, CrioIdentificadores {
 
             when (opcao) {
                 "s" -> {
-                    UsoIndividuos().validoLogin()
+                    UsoIndividuos().façoLogin(escolha, professores, alunos)
                 }
 
                 "n" -> {
-                    UsoIndividuos().realizoRegistro(escolha)
+                    UsoIndividuos().realizoRegistro(escolha, departamentos, professores, alunos)
                 }
 
                 else -> {
@@ -39,14 +45,20 @@ class UsoIndividuos : FazLogin, CrioCadastro, CrioIdentificadores {
         }
     }
 
-    override fun geroId(): Int {
+    override fun geroId(professores: MutableList<Professor>, alunos: MutableList<Aluno>): Int {
         var enter: Int
         var help: Boolean
 
         do {
             enter = Random.nextInt(1000, 100000)
             help = true
-            for (i in individuals) {
+            for (i in professores) {
+                if (i.id == enter) {
+                    help = false
+                    break
+                }
+            }
+            for (i in alunos) {
                 if (i.id == enter) {
                     help = false
                     break
@@ -57,28 +69,84 @@ class UsoIndividuos : FazLogin, CrioCadastro, CrioIdentificadores {
         return enter
     }
 
-    override fun validoLogin(): Boolean {
-        println("")
+    fun façoLogin(escolha: String, professores: MutableList<Professor>, alunos: MutableList<Aluno>, ): Boolean {
+        println("Entre com suas credenciais.\n")
+
+        if (escolha.equals("p")){
+            println("Identificador : ")
+            var identificador = sc.nextInt()
+            sc.nextLine()
+            println("Senha : ")
+            var senha = sc.nextLine()
+
+            val idEncontrado = professores.stream() //Essa é só uma forma mais Java de se validar um identificador
+                .filter(Predicate<Professor> { content: Professor -> content.id == identificador }).findFirst().orElse(null)
+
+            if (idEncontrado != null && senha.equals(idEncontrado.senha)){
+                println("Login efetivado com sucesso.\n")
+            }
+            else{
+                println("Credenciais inválidas.\n")
+            }
+        }
+        else if (escolha.equals("a")){
+            println("Identificador : ")
+            var identificador = sc.nextInt()
+            sc.nextLine()
+            println("Senha : ")
+            var senha = sc.nextLine()
+
+            //Essa é a forma mais Kotlin de se validar um identificador
+            val idEncontrado = alunos.find {it.id == identificador}
+
+            if (idEncontrado != null && senha.equals(idEncontrado.senha)){
+                println("Login efetivado com sucesso.\n")
+            }
+            else{
+                println("Credenciais inválidas.\n")
+            }
+        }
+
         return true
     }
 
-    override fun realizoRegistro(escolha : String) {
+
+    override fun realizoRegistro(
+        escolha: String,
+        departamentos: MutableList<Departamento>,
+        professores: MutableList<Professor>,
+        alunos: MutableList<Aluno>
+    ) : Boolean {
         println("Realize o preenchimento de acordo com as solicitações feitas.\n")
-        var id = geroId()
+        var id = geroId(professores, alunos)
         println("Nome : ")
         var nome = sc.nextLine()
         println("Departamento : ")
         var departamento = sc.nextLine().trim().lowercase()
-        if (escolha.equals("p")){
-            println("Número de horas dedicadas à instituição : ")
-            var horas = sc.nextInt()
-        }
-        else if (escolha.equals("a")){
-            println("Número da matrícula : ")
-            var matricula = sc.nextInt();
-        }
-        val individuo = Individuo(id, nome, Departamento(1, departamento))
 
-        individuals.add(individuo)
+        val deptEncontrado = departamentos.find { it.nome.equals(departamento) }
+
+        if (deptEncontrado != null) {
+
+            println("Senha de acesso à plataforma : ")
+            var senha = sc.nextLine()
+            if (escolha.equals("p")) {
+                println("Número de horas dedicadas à instituição : ")
+                var horas = sc.nextInt()
+                val professor = Professor(id, nome, Departamento(deptEncontrado.numero, deptEncontrado.nome), senha, horas)
+                professores.add(professor)
+
+            } else if (escolha.equals("a")) {
+                println("Número da matrícula : ")
+                var matricula = sc.nextInt();
+                val aluno = Aluno(id, nome, Departamento(deptEncontrado.numero, deptEncontrado.nome), senha, matricula)
+                alunos.add(aluno)
+            }
+            return true
+        }
+        else {
+            println("Seu departamento ainda não está cadastrado no sistema. Entre em contato com o administrador do sistema.\n")
+            return false
+        }
     }
 }

@@ -1,7 +1,7 @@
 package domain
 
 data class Departamento (
-    private val numero : Int,
-    private val nome : String
+    val numero : Int,
+    val nome : String
 )
 
