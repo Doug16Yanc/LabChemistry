@@ -103,7 +103,7 @@ class Gerenciamento {
         var id = sc.nextInt()
         sc.nextLine()
         println("Nome : ")
-        var nome = sc.nextLine()
+        var nome = sc.nextLine().trim().lowercase()
 
         val departamento = Departamento(id, nome)
         println("Departamento $id, de $nome cadastrado com sucesso.\n")

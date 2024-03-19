@@ -7,19 +7,20 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class Substancial {
-    fun armazenaProdutos() : MutableList<Produto>{
-        val produtos : MutableList<Produto> = ArrayList<Produto>()
 
-        val p1 = Produto(1765, "Ácido sulfúrico", "H2SO4", LocalDate.of(2028, 12, 1), 100, "União Química")
-        val p2 = Produto(1768, "Hidróxido de Potássio", "KOH", LocalDate.of(2028,  5, 9), 80, "ForteX Indústria")
-        val p3 = Produto(1883, "Nitrato de cálcio", "Ca(OH)2", LocalDate.of(2025,  9, 15), 130, "ForteX Indústria")
-        val p4 = Produto(1895, "Óxido de ferro (III)", "FE2O3", LocalDate.of(2027,  11, 9), 80, "BASF")
+    private val produtos : MutableList<Produto> = ArrayList<Produto>()
 
-        produtos.add(p1)
-        produtos.add(p2)
-        produtos.add(p3)
-        produtos.add(p4)
-        return produtos
+    init {
+        produtos.addAll(armazenaProdutos())
+    }
+    fun armazenaProdutos() : List<Produto>{
+
+       return listOf(
+           Produto(1765, "Ácido sulfúrico", "H2SO4", LocalDate.of(2028, 12, 1), 100, "União Química"),
+           Produto(1768, "Hidróxido de Potássio", "KOH", LocalDate.of(2028,  5, 9), 80, "ForteX Indústria"),
+           Produto(1883, "Nitrato de cálcio", "Ca(OH)2", LocalDate.of(2025,  9, 15), 130, "ForteX Indústria"),
+           Produto(1895, "Óxido de ferro (III)", "FE2O3", LocalDate.of(2027,  11, 9), 80, "BASF"),
+        )
     }
     fun cadastrarProduto(){
         println("Dê todas as informações solicitadas:")
@@ -46,7 +47,8 @@ class Substancial {
 
             val produto = Produto(numero, nome, formula, dataValidade, quantidade, fornecedora)
 
-            armazenaProdutos().add(produto)
+            produtos.add(produto)
+            println("Produto ${produto.numero}, ${produto.nome} adicionado com sucesso.\n")
         }
         else {
             println("Já há um produto com CAS igual. Trata-se do ${numeroExistente.nome}\n")
@@ -55,7 +57,7 @@ class Substancial {
 
     fun analisarProdutos() {
         println("Produtos químicos atualmente em estoque.\n")
-        for (produto in armazenaProdutos()){
+        for (produto in produtos){
             imprimeMensagem(
                     "CAS : ${produto.numero}\n" +
                     "Nome : ${produto.nome}\n" +
@@ -74,6 +76,7 @@ class Substancial {
 
         if (produtoEncontrado != null){
             println("Produto ${produtoEncontrado.nome}, com CAS ${produtoEncontrado.numero} removido com sucesso.\n")
+            produtos.remove(produtoEncontrado)
         }
         else{
             println("Produto não encontrado.\n")

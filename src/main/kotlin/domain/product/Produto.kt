@@ -8,6 +8,6 @@ data class Produto(
         val nome : String,
         val formula : String,
         val validade : LocalDate,
-        val quantidade : Int,
+        var quantidade : Int,
         val fornecedor : String
         )
